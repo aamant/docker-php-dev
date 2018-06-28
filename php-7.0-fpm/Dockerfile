@@ -30,6 +30,12 @@ RUN curl -sL https://deb.nodesource.com/setup_9.x | bash - \
     && apt install -y nodejs \
     && npm -g install grunt-cli less uglify-js uglifycss
 
+RUN apt-get install -y curl apt-transport-https && \
+    curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
+    echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
+    apt-get update && apt-get install -y yarn
+
+
 # Clean RUN apt-get clean
 RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/cache/*
 
