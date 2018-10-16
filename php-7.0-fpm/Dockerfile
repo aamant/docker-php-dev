@@ -35,8 +35,8 @@ RUN apt-get install -y curl apt-transport-https && \
     echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
     apt-get update && apt-get install -y yarn
 
-
 # Clean RUN apt-get clean
+RUN apt-get autoremove -y
 RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/cache/*
 
 COPY custom.ini /usr/local/etc/php/conf.d/custom.ini

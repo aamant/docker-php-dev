@@ -1,6 +1,6 @@
-FROM php:7.1-apache-jessie
+FROM php:7.1-fpm-jessie
 
-RUN pecl install xdebug-2.5.5 \
+RUN pecl install xdebug-2.6.1 \
     && docker-php-ext-enable xdebug
 
 RUN apt-get update && apt-get install -y \
@@ -14,8 +14,8 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
     && docker-php-ext-install -j$(nproc) gd
 
-# PHP
-# intl
+# PHP 
+# intl 
 RUN apt-get update \
     && apt-get install -y libicu-dev \
     && docker-php-ext-configure intl \
@@ -23,38 +23,33 @@ RUN apt-get update \
 
 # others
 RUN docker-php-ext-install \
-    soap \
-    bcmath
+    soap
 
-# nodejs
-RUN curl -sL https://deb.nodesource.com/setup_9.x | bash - \
-    && apt-get install -y nodejs \
+# grunt less
+RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - \
+    && apt install -y nodejs \
     && npm -g install grunt-cli less uglify-js uglifycss
 
-RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
+RUN apt-get install -y curl apt-transport-https && \
+    curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
     echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
     apt-get update && apt-get install -y yarn
 
 
-COPY host.conf /etc/apache2/sites-available/host.conf
-COPY custom.ini /usr/local/etc/php/conf.d/custom.ini
+# Clean RUN apt-get clean
+RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/cache/*
 
-RUN a2enmod rewrite
-RUN a2dissite 000-default
-RUN a2ensite host
+COPY custom.ini /usr/local/etc/php/conf.d/custom.ini
 
 # Composer
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
-    && php -r "if (hash_file('SHA384', 'composer-setup.php') === '93b54496392c062774670ac18b134c3b3a95e5a5e5c8f1a9f115f203b75bf9a129d5daa8ba6a13e2cc8a1da0806388a8') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" \
+    && php -r "if (hash_file('SHA384', 'composer-setup.php') === '544e09ee996cdf60ece3804abc52599c22b1f40f4323403c44d44fdfdd586475ca9813a858088ffbc1f233e9b180f061') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" \
     && php composer-setup.php  --install-dir=/usr/local/bin --filename=composer \
     && php -r "unlink('composer-setup.php');"
 
-# Clean RUN apt-get clean
-RUN apt-get autoremove -y
-RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/cache/*
+VOLUME /sources
 
 WORKDIR /sources
 
-CMD composer self-update \
-    && rm -f /var/run/apache2/apache2.pid \
-    && /usr/sbin/apache2ctl -D FOREGROUND
+EXPOSE 9000
+CMD ["php-fpm"]
