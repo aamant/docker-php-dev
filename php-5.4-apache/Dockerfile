@@ -1,8 +1,8 @@
-FROM php:5.6-apache-jessie
+FROM php:5.4-apache
 
 COPY sources.list /etc/apt/sources.list
 
-RUN pecl install xdebug-2.5.5 \
+RUN pecl install xdebug-2.4.1 \
     && docker-php-ext-enable xdebug
 
 RUN apt-get update && apt-get install -y \
@@ -11,10 +11,12 @@ RUN apt-get update && apt-get install -y \
         libjpeg62-turbo-dev \
         libmcrypt-dev \
         libpng-dev \
-        libxslt-dev \
-    && docker-php-ext-install -j$(nproc) iconv mcrypt pdo pdo_mysql zip xsl curl opcache \
-    && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
-    && docker-php-ext-install -j$(nproc) gd
+        libxslt-dev
+
+RUN docker-php-ext-install iconv mcrypt pdo pdo_mysql zip xsl curl
+
+RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
+    && docker-php-ext-install gd
 
 # PHP
 # intl
