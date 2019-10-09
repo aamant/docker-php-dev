@@ -35,6 +35,11 @@ RUN apt-get install -y curl apt-transport-https && \
     echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
     apt-get update && apt-get install -y yarn
 
+# ssmtp
+RUN apt-get update && apt-get install -y ssmtp mailutils
+COPY ssmtp/ssmtp.conf /etc/ssmtp/ssmtp.conf
+COPY ssmtp/revaliases /etc/ssmtp/revaliases
+
 # Clean RUN apt-get clean
 RUN apt-get autoremove -y
 RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/cache/*
