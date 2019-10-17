@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  proxy:
+    build:
+      context: docker/proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - proxy
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./cert:/etc/nginx/certs
+
+  mail:
+    image: djfarrelly/maildev
+    networks:
+      - proxy
+    restart: always
+    environment:
+      - VIRTUAL_HOST=mail.test
+
+networks:
+  proxy:
+    driver: bridge
