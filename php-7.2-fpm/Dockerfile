@@ -21,6 +21,11 @@ RUN apt-get update \
     && docker-php-ext-configure intl \
     && docker-php-ext-install intl
 
+RUN echo "deb http://deb.debian.org/debian stretch-backports main" >> /etc/apt/sources.list
+RUN apt update && apt-get -t stretch-backports install -y libsodium-dev
+RUN docker-php-ext-configure sodium \
+    && docker-php-ext-install sodium
+
 # others
 RUN docker-php-ext-install soap bcmath
 
