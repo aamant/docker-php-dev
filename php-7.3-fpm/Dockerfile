@@ -1,8 +1,8 @@
-FROM php:7.3-fpm-stretch
+FROM php:7.3-fpm-buster
 
 ENV PHP_ENABLE_XDEBUG false
 
-RUN pecl install xdebug-2.7.2
+RUN pecl install xdebug-2.8.1
 
 RUN apt-get update && apt-get install -y \
 		git zip unzip libcurl4-gnutls-dev \
@@ -17,8 +17,7 @@ RUN apt-get update && apt-get install -y \
 
 # PHP 
 # intl 
-RUN apt-get update \
-    && apt-get install -y libicu-dev \
+RUN apt-get install -y libicu-dev \
     && docker-php-ext-configure intl \
     && docker-php-ext-install intl
 
@@ -29,10 +28,11 @@ RUN curl -sL https://deb.nodesource.com/setup_12.x | bash - \
     && apt-get install -y nodejs \
     && npm -g install grunt-cli less sass uglify-js uglifycss
 
-# ssmtp
-RUN apt-get update && apt-get install -y ssmtp mailutils
-COPY ssmtp/ssmtp.conf /etc/ssmtp/ssmtp.conf
-COPY ssmtp/revaliases /etc/ssmtp/revaliases
+# smtp
+RUN apt-get update && apt-get install -y msmtp mailutils
+COPY etc/msmtp /var/www/.msmtprc
+RUN chown www-data: /var/www/.msmtprc
+RUN chmod 644 /var/www/.msmtprc
 
 # Clean RUN apt-get clean
 RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/cache/*

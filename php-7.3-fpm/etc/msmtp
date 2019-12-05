@@ -1,0 +1,8 @@
+defaults
+
+account maildev
+host mail
+port 25
+from "user@mail.test"
+
+account default : maildev
