@@ -30,7 +30,7 @@ RUN curl -sL https://deb.nodesource.com/setup_12.x | bash - \
 
 # smtp
 RUN apt-get update && apt-get install -y msmtp mailutils
-COPY etc/msmtp /var/www/.msmtprc
+ADD etc/msmtprc /var/www/.msmtprc
 RUN chown www-data: /var/www/.msmtprc
 RUN chmod 644 /var/www/.msmtprc
 
