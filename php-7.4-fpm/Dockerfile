@@ -36,6 +36,8 @@ ADD etc/msmtprc /etc/msmtprc
 RUN chmod 644 /etc/msmtprc
 RUN rm -rf /usr/sbin/sendmail && ln -s /usr/bin/msmtp /usr/sbin/sendmail
 
+RUN docker-php-ext-install sockets
+
 # Clean RUN apt-get clean
 RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/cache/*
 
