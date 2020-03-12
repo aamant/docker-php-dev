@@ -30,9 +30,10 @@ RUN curl -sL https://deb.nodesource.com/setup_12.x | bash - \
 
 # smtp
 RUN apt-get update && apt-get install -y msmtp mailutils
-ADD etc/msmtprc /var/www/.msmtprc
-RUN chown www-data: /var/www/.msmtprc
-RUN chmod 644 /var/www/.msmtprc
+RUN apt purge -y exim4-base exim4-config
+ADD etc/msmtprc /etc/msmtprc
+RUN chmod 644 /etc/msmtprc
+RUN rm -rf /usr/sbin/sendmail && ln -s /usr/bin/msmtp /usr/sbin/sendmail
 
 # Clean RUN apt-get clean
 RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/cache/*
