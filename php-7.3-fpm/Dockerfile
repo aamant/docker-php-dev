@@ -3,7 +3,7 @@ FROM php:7.3-fpm-buster
 ENV PHP_ENABLE_XDEBUG false
 ENV PHP_ENABLE_BLACKFIRE false
 
-RUN pecl install xdebug-2.9.4
+RUN pecl install xdebug-2.9.6
 
 RUN apt-get update && apt-get install -y \
 		git zip unzip libcurl4-gnutls-dev \

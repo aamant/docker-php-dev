@@ -1,6 +1,7 @@
 FROM php:7.4-fpm-buster
 
 ENV PHP_ENABLE_XDEBUG false
+ENV MAGENTO_DIR true
 
 RUN pecl install xdebug-2.8.1
 
@@ -12,7 +13,14 @@ RUN apt-get update && apt-get install -y \
         libxslt-dev \
         libzip-dev \
     && docker-php-ext-install -j$(nproc) iconv pdo pdo_mysql zip xsl curl opcache \
-    && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
+    && docker-php-ext-configure gd \
+       --enable-gd \
+       --enable-gd-native-ttf \
+       --with-freetype \
+       --with-freetype-dir=/usr/include/freetype2 \
+       --with-png-dir \
+       --with-jpeg \
+       --with-jpeg-dir \
     && docker-php-ext-install -j$(nproc) gd
 
 # PHP 
@@ -23,7 +31,7 @@ RUN apt-get update \
     && docker-php-ext-install intl
 
 # others
-RUN docker-php-ext-install soap bcmath
+RUN docker-php-ext-install soap bcmath sockets
 
 RUN curl -sL https://deb.nodesource.com/setup_12.x | bash - \
     && apt-get install -y nodejs \
@@ -43,7 +51,9 @@ RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/cache/*
 
 # Composer
 RUN curl -sS https://getcomposer.org/installer | \
-  php -- --install-dir=/usr/local/bin --filename=composer
+  php -- --install-dir=/usr/local/bin --filename=composer.phar
+ADD composer.sh /usr/local/bin/composer
+RUN chmod +x /usr/local/bin/composer
 
 WORKDIR /sources
 
