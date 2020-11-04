@@ -1,9 +1,10 @@
 FROM php:7.4-fpm-buster
 
 ENV PHP_ENABLE_XDEBUG false
+ENV PHP_ENABLE_BLACKFIRE false
 ENV MAGENTO_DIR true
 
-RUN pecl install xdebug-2.8.1
+RUN pecl install xdebug-2.9.8
 
 RUN apt-get update && apt-get install -y \
 		git zip unzip libcurl4-gnutls-dev \
@@ -51,9 +52,22 @@ RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/cache/*
 
 # Composer
 RUN curl -sS https://getcomposer.org/installer | \
-  php -- --install-dir=/usr/local/bin --filename=composer.phar
+  php -- --install-dir=/usr/local/bin --filename=composer.phar --version=1.10.17
 ADD composer.sh /usr/local/bin/composer
 RUN chmod +x /usr/local/bin/composer
+
+# blackfire
+RUN version=$(php -r "echo PHP_MAJOR_VERSION.PHP_MINOR_VERSION;") \
+    && curl -A "Docker" -o /tmp/blackfire-probe.tar.gz -D - -L -s https://blackfire.io/api/v1/releases/probe/php/linux/amd64/$version \
+    && mkdir -p /tmp/blackfire \
+    && tar zxpf /tmp/blackfire-probe.tar.gz -C /tmp/blackfire \
+    && mv /tmp/blackfire/blackfire-*.so $(php -r "echo ini_get ('extension_dir');")/blackfire.so \
+    && rm -rf /tmp/blackfire /tmp/blackfire-probe.tar.gz
+
+RUN mkdir -p /tmp/blackfire \
+    && curl -A "Docker" -L https://blackfire.io/api/v1/releases/client/linux_static/amd64 | tar zxp -C /tmp/blackfire \
+    && mv /tmp/blackfire/blackfire /usr/bin/blackfire \
+    && rm -Rf /tmp/blackfire
 
 WORKDIR /sources
 

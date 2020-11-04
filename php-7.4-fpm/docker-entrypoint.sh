@@ -4,6 +4,10 @@
     docker-php-ext-enable xdebug && \
     echo "Xdebug is enabled"
 
+[ "$PHP_ENABLE_BLACKFIRE" = "true" ] && \
+    printf "extension=blackfire.so\nblackfire.agent_socket=tcp://blackfire:8707\n" > $PHP_INI_DIR/conf.d/blackfire.ini && \
+    echo "Blackfire is enabled"
+
 [ "$MAGENTO_DIR" = "true" ] \
     && chown -R www-data var \
     && chown -R www-data generated \
