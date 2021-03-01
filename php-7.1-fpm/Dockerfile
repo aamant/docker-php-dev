@@ -1,6 +1,7 @@
 FROM php:7.1-fpm-stretch
 
 ENV PHP_ENABLE_XDEBUG false
+ENV MAGENTO_DIR true
 
 RUN pecl install xdebug-2.7.2
 
