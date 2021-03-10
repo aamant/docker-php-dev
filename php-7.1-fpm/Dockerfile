@@ -41,7 +41,14 @@ RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/cache/*
 
 # Composer
 RUN curl -sS https://getcomposer.org/installer | \
-  php -- --install-dir=/usr/local/bin --filename=composer --1
+  php -- --install-dir=/usr/local/bin --filename=composer.phar --1
+RUN \
+  { \
+    echo '#!/bin/bash'; \
+    echo ''; \
+    echo '/usr/local/bin/php -d memory_limit=-1 /usr/local/bin/composer.phar "$@"'; \
+  } > /usr/local/bin/composer
+RUN chmod +x /usr/local/bin/composer
 
 WORKDIR /sources
 

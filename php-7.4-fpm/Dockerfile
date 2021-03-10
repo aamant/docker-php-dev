@@ -4,7 +4,7 @@ ENV PHP_ENABLE_XDEBUG false
 ENV PHP_ENABLE_BLACKFIRE false
 ENV MAGENTO_DIR true
 
-RUN pecl install xdebug-2.9.8
+RUN pecl install xdebug-3.0.3
 
 RUN apt-get update && apt-get install -y \
 		git zip unzip libcurl4-gnutls-dev \
@@ -13,16 +13,9 @@ RUN apt-get update && apt-get install -y \
         libpng-dev \
         libxslt-dev \
         libzip-dev \
-    && docker-php-ext-install -j$(nproc) iconv pdo pdo_mysql zip xsl curl opcache \
-    && docker-php-ext-configure gd \
-       --enable-gd \
-       --enable-gd-native-ttf \
-       --with-freetype \
-       --with-freetype-dir=/usr/include/freetype2 \
-       --with-png-dir \
-       --with-jpeg \
-       --with-jpeg-dir \
-    && docker-php-ext-install -j$(nproc) gd
+    && docker-php-ext-install iconv pdo pdo_mysql zip xsl curl opcache \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install gd
 
 # PHP 
 # intl 
@@ -52,8 +45,13 @@ RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/cache/*
 
 # Composer
 RUN curl -sS https://getcomposer.org/installer | \
-  php -- --install-dir=/usr/local/bin --filename=composer.phar --version=1.10.17
-ADD composer.sh /usr/local/bin/composer
+  php -- --install-dir=/usr/local/bin --filename=composer.phar --1
+RUN \
+  { \
+    echo '#!/bin/bash'; \
+    echo ''; \
+    echo '/usr/local/bin/php -d memory_limit=-1 /usr/local/bin/composer.phar "$@"'; \
+  } > /usr/local/bin/composer
 RUN chmod +x /usr/local/bin/composer
 
 # blackfire

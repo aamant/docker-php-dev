@@ -4,7 +4,7 @@ ENV PHP_ENABLE_XDEBUG false
 ENV PHP_ENABLE_BLACKFIRE false
 ENV MAGENTO_DIR true
 
-RUN pecl install xdebug-2.9.8
+RUN pecl install xdebug-3.0.3
 
 RUN apt-get update && apt-get install -y \
 		git zip unzip libcurl4-gnutls-dev \
@@ -44,8 +44,13 @@ RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/cache/*
 
 # Composer
 RUN curl -sS https://getcomposer.org/installer | \
-  php -- --install-dir=/usr/local/bin --filename=composer.phar --version=1.10.17
-ADD composer.sh /usr/local/bin/composer
+  php -- --install-dir=/usr/local/bin --filename=composer.phar --1
+RUN \
+  { \
+    echo '#!/bin/bash'; \
+    echo ''; \
+    echo '/usr/local/bin/php -d memory_limit=-1 /usr/local/bin/composer.phar "$@"'; \
+  } > /usr/local/bin/composer
 RUN chmod +x /usr/local/bin/composer
 
 # blackfire
@@ -67,7 +72,7 @@ ADD docker-entrypoint.sh /docker-entrypoint.sh
 RUN ["chmod", "+x", "/docker-entrypoint.sh"]
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
-ADD php/custom.ini /usr/local/etc/php/conf.d/xxx-custom.ini
+ADD php/custom.ini /usr/local/etc/php/conf.d/xxx-image.ini
 ADD php/php-fpm.conf /usr/local/etc/
 
 CMD ["php-fpm", "-F"]
