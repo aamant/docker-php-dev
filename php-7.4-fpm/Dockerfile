@@ -4,7 +4,7 @@ ENV PHP_ENABLE_XDEBUG false
 ENV PHP_ENABLE_BLACKFIRE false
 ENV MAGENTO_DIR true
 
-RUN pecl install xdebug-3.0.3
+RUN pecl install xdebug-3.0.4
 
 RUN apt-get update && apt-get install -y \
 		git zip unzip libcurl4-gnutls-dev \

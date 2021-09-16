@@ -3,7 +3,7 @@ FROM php:7.2-fpm-stretch
 ENV PHP_ENABLE_XDEBUG false
 ENV MAGENTO_DIR true
 
-RUN pecl install xdebug-3.0.3
+RUN pecl install xdebug-3.0.4
 
 RUN apt-get update && apt-get install -y \
 		git zip unzip libcurl4-gnutls-dev \
