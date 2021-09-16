@@ -41,7 +41,7 @@ RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/cache/*
 
 # Composer
 RUN curl -sS https://getcomposer.org/installer | \
-  php -- --install-dir=/usr/local/bin --filename=composer.phar --1
+  php -- --install-dir=/usr/local/bin --filename=composer.phar
 RUN \
   { \
     echo '#!/bin/bash'; \
