@@ -31,6 +31,11 @@ RUN docker-php-ext-configure sodium \
 # others
 RUN docker-php-ext-install soap bcmath
 
+# exif
+RUN docker-php-ext-install exif
+RUN docker-php-ext-configure exif \
+            --enable-exif
+
 # grunt less
 RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - \
     && apt install -y nodejs \
