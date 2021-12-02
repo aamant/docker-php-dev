@@ -54,6 +54,7 @@ RUN \
 RUN chmod +x /usr/local/bin/composer
 
 # blackfire
+# add env var to docker-compose BLACKFIRE_CLIENT_ID BLACKFIRE_CLIENT_TOKEN
 RUN version=$(php -r "echo PHP_MAJOR_VERSION.PHP_MINOR_VERSION;") \
     && curl -A "Docker" -o /tmp/blackfire-probe.tar.gz -D - -L -s https://blackfire.io/api/v1/releases/probe/php/linux/amd64/$version \
     && mkdir -p /tmp/blackfire \
