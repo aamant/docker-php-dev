@@ -4,7 +4,7 @@ ENV PHP_ENABLE_XDEBUG false
 ENV MAGENTO_DIR true
 ENV DOCUMENT_ROOT=/var/www/html/pub
 
-RUN pecl install xdebug-3.1.2
+RUN pecl install xdebug-3.1.6
 
 RUN apt-get update && apt-get install -y \
 		git zip unzip libcurl4-gnutls-dev \
@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
         libjpeg62-turbo-dev \
         libpng-dev \
         libxslt-dev \
-    && docker-php-ext-install -j$(nproc) iconv pdo pdo_mysql zip xsl curl opcache \
+    && docker-php-ext-install -j$(nproc) iconv pdo pdo_mysql zip xsl curl opcache mbstring \
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
     && docker-php-ext-install -j$(nproc) gd
 
@@ -29,7 +29,7 @@ RUN docker-php-ext-configure sodium \
     && docker-php-ext-install sodium
 
 # others
-RUN docker-php-ext-install soap bcmath
+RUN docker-php-ext-install soap bcmath mbstring
 
 # exif
 RUN docker-php-ext-install exif
@@ -45,6 +45,18 @@ RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - \
 RUN apt-get update && apt-get install -y ssmtp mailutils
 COPY ssmtp/ssmtp.conf /etc/ssmtp/ssmtp.conf
 COPY ssmtp/revaliases /etc/ssmtp/revaliases
+
+# IMAP
+RUN apt-get update && \
+    apt-get install -y \
+        libc-client-dev libkrb5-dev && \
+    rm -r /var/lib/apt/lists/*
+
+RUN apt-get update && \
+    apt-get install -y poppler-utils
+
+RUN docker-php-ext-configure imap --with-kerberos --with-imap-ssl && \
+    docker-php-ext-install -j$(nproc) imap
 
 # Clean RUN apt-get clean
 RUN apt purge -y libcurl4-gnutls-dev \

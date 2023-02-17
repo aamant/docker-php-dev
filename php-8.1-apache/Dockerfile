@@ -1,20 +1,20 @@
-FROM php:7.4-apache-buster
+FROM php:8.1-apache-bullseye
 
 ENV PHP_ENABLE_XDEBUG false
 ENV PHP_ENABLE_BLACKFIRE false
 ENV MAGENTO_DIR true
 ENV DOCUMENT_ROOT=/var/www/html/pub
+ENV COMPOSER_VERSION = "latest"
 
-RUN pecl install xdebug-3.1.2
+RUN pecl install xdebug-3.2.0
 
-RUN apt-get update && apt-get install -y  \
+RUN apt-get update && apt-get install -y \
 		git zip unzip libcurl4-gnutls-dev \
         libfreetype6-dev \
         libjpeg62-turbo-dev \
         libpng-dev \
         libxslt-dev \
         libzip-dev \
-        cron \
     && docker-php-ext-install iconv pdo pdo_mysql zip xsl curl opcache \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install gd
@@ -27,9 +27,9 @@ RUN apt-get update \
     && docker-php-ext-install intl
 
 # others
-RUN docker-php-ext-install soap bcmath sockets calendar
+RUN docker-php-ext-install soap bcmath sockets
 
-RUN curl -sL https://deb.nodesource.com/setup_12.x | bash - \
+RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - \
     && apt-get install -y nodejs \
     && npm -g install grunt-cli less sass uglify-js uglifycss
 
@@ -76,7 +76,6 @@ RUN \
   { \
     echo 'SetEnv MAGE_IS_DEVELOPER_MODE 1'; \
     echo 'SetEnvIf X-Forwarded-Proto https HTTPS=on'; \
-    echo 'MaxKeepAliveRequests 1000'; \
   } > /etc/apache2/conf-enabled/magento.conf
 
 WORKDIR /var/www/html/

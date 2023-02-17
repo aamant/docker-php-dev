@@ -73,7 +73,6 @@ RUN set -eux \
 
 RUN \
   { \
-    echo 'SetEnv MAGE_IS_DEVELOPER_MODE 1'; \
     echo 'SetEnvIf X-Forwarded-Proto https HTTPS=on'; \
   } > /etc/apache2/conf-enabled/magento.conf
 
