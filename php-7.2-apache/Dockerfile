@@ -1,4 +1,4 @@
-FROM php:7.2-apache-stretch
+FROM php:7.2-apache
 
 ENV PHP_ENABLE_XDEBUG false
 ENV MAGENTO_DIR true
@@ -23,8 +23,10 @@ RUN apt-get update \
     && docker-php-ext-configure intl \
     && docker-php-ext-install intl
 
-RUN echo "deb http://deb.debian.org/debian stretch-backports main" >> /etc/apt/sources.list
-RUN apt update && apt-get -t stretch-backports install -y libsodium-dev
+#RUN echo "deb http://deb.debian.org/debian stretch-backports main" >> /etc/apt/sources.list
+#RUN apt update && apt-get -t stretch-backports install -y libsodium-dev
+
+RUN apt update && apt-get install -y libsodium-dev
 RUN docker-php-ext-configure sodium \
     && docker-php-ext-install sodium
 
@@ -41,10 +43,12 @@ RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - \
     && apt install -y nodejs \
     && npm -g install grunt-cli less sass uglify-js uglifycss
 
-# ssmtp
-RUN apt-get update && apt-get install -y ssmtp mailutils
-COPY ssmtp/ssmtp.conf /etc/ssmtp/ssmtp.conf
-COPY ssmtp/revaliases /etc/ssmtp/revaliases
+# smtp
+RUN apt-get update && apt-get install -y msmtp mailutils
+RUN apt purge -y exim4-base exim4-config
+ADD etc/msmtprc /etc/msmtprc
+RUN chmod 644 /etc/msmtprc
+RUN rm -rf /usr/sbin/sendmail && ln -s /usr/bin/msmtp /usr/sbin/sendmail
 
 # IMAP
 RUN apt-get update && \
