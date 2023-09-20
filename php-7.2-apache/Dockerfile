@@ -39,7 +39,7 @@ RUN docker-php-ext-configure exif \
             --enable-exif
 
 # grunt less
-RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - \
+RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - \
     && apt install -y nodejs \
     && npm -g install grunt-cli less sass uglify-js uglifycss
 
