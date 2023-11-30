@@ -4,7 +4,8 @@ ENV PHP_ENABLE_XDEBUG false
 ENV PHP_ENABLE_BLACKFIRE false
 ENV MAGENTO_DIR true
 
-RUN pecl install xdebug-3.1.2
+# https://xdebug.org/download/historical
+RUN pecl install xdebug-3.1.6
 
 RUN apt-get update && apt-get install -y \
 		git zip unzip libcurl4-gnutls-dev \
@@ -38,6 +39,7 @@ RUN chmod 644 /etc/msmtprc
 RUN rm -rf /usr/sbin/sendmail && ln -s /usr/bin/msmtp /usr/sbin/sendmail
 
 RUN docker-php-ext-install sockets
+RUN docker-php-ext-configure calendar && docker-php-ext-install calendar
 
 # Clean RUN apt-get clean
 RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/cache/*

@@ -6,7 +6,8 @@ ENV MAGENTO_DIR true
 ENV DOCUMENT_ROOT=/var/www/html/pub
 ENV LOGLEVEL="info ssl:warn"
 
-RUN pecl install xdebug-3.1.2
+# https://xdebug.org/download/historical
+RUN pecl install xdebug-3.1.6
 
 RUN apt-get update && apt-get install -y \
 		git zip unzip libcurl4-gnutls-dev \
@@ -27,6 +28,7 @@ RUN apt-get install -y libicu-dev \
 
 # others
 RUN docker-php-ext-install soap bcmath sockets
+RUN docker-php-ext-configure calendar && docker-php-ext-install calendar
 
 RUN curl -sL https://deb.nodesource.com/setup_12.x | bash - \
     && apt-get install -y nodejs \
