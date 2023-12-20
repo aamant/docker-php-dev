@@ -1,4 +1,4 @@
-FROM php:7.0-apache-jessie
+FROM php:7.0-apache-stretch
 
 ENV PHP_ENABLE_XDEBUG false
 ENV MAGENTO_DIR true
@@ -6,6 +6,10 @@ ENV DOCUMENT_ROOT=/var/www/html/pub
 ENV LOGLEVEL="info ssl:warn"
 
 RUN pecl install xdebug-2.7.2
+
+# RUN echo "deb http://deb.debian.org/debian stretch-backports main contrib non-free" > /etc/apt/sources.list
+RUN echo "deb http://archive.debian.org/debian/ stretch main" > /etc/apt/sources.list
+RUN echo "deb-src http://archive.debian.org/debian/ stretch main" >> /etc/apt/sources.list
 
 RUN apt-get update && apt-get install -y \
 		git zip unzip libcurl4-gnutls-dev \

@@ -16,10 +16,11 @@ set -e
     && chown -R www-data pub/static
 
 echo "Change document root to $DOCUMENT_ROOT"
+mkdir -p $DOCUMENT_ROOT;
 sed -e "s#DocumentRoot.*#DocumentRoot $DOCUMENT_ROOT#" -i /etc/apache2/sites-available/000-default.conf;
 
-echo "Change apache LogLevel $LOGLEVEL"
-sed -e "s/#LogLevel info ssl:warn/LogLevel $LOGLEVEL/" -i /etc/apache2/sites-available/000-default.conf
+#echo "Change apache LogLevel $LOGLEVEL"
+#sed -e "s/#LogLevel info ssl:warn/LogLevel $LOGLEVEL/" -i /etc/apache2/sites-available/000-default.conf
 
 # first arg is `-f` or `--some-option`
 if [ "${1#-}" != "$1" ]; then
