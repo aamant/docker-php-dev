@@ -5,7 +5,7 @@ ENV PHP_ENABLE_BLACKFIRE false
 ENV MAGENTO_DIR true
 ENV DOCUMENT_ROOT=/var/www/html/pub
 ENV COMPOSER_VERSION = "latest"
-ENV NODE_MAJOR=20
+ENV NODE_MAJOR=18
 
 RUN pecl install xdebug-3.2.0
 
@@ -83,6 +83,9 @@ RUN \
     echo 'SetEnv MAGE_IS_DEVELOPER_MODE 1'; \
     echo 'SetEnvIf X-Forwarded-Proto https HTTPS=on'; \
   } > /etc/apache2/conf-enabled/magento.conf
+
+RUN touch /var/log/msmtp.log
+RUN chmod 777 /var/log/msmtp.log
 
 WORKDIR /var/www/html/
 
