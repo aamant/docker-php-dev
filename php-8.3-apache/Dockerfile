@@ -1,4 +1,4 @@
-FROM php:8.2-apache-bullseye
+FROM php:8.3-apache-bookworm
 
 ENV PHP_ENABLE_XDEBUG false
 ENV PHP_ENABLE_BLACKFIRE false
@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y \
         libpng-dev \
         libxslt-dev \
         libzip-dev \
-        libmpdec-dev \
+#        libmpdec-dev \
     && docker-php-ext-install iconv pdo pdo_mysql zip xsl curl opcache \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install gd

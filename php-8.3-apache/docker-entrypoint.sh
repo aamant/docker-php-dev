@@ -15,7 +15,7 @@
 
 
 echo "Composer change version to $COMPOSER_VERSION"
-composer self-update -- $COMPOSER_VERSION
+composer self-update --$COMPOSER_VERSION
 
 echo "Change document root to $DOCUMENT_ROOT"
 sed -e "s#DocumentRoot.*#DocumentRoot $DOCUMENT_ROOT#" -i /etc/apache2/sites-available/000-default.conf;
