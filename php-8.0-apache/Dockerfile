@@ -5,6 +5,7 @@ ENV PHP_ENABLE_BLACKFIRE false
 ENV MAGENTO_DIR true
 ENV DOCUMENT_ROOT=/var/www/html/pub
 ENV NODE_MAJOR=20
+ENV TZ=Europe/Paris
 
 RUN pecl install xdebug-3.1.2
 
@@ -28,6 +29,10 @@ RUN apt-get update \
 
 # others
 RUN docker-php-ext-install soap bcmath sockets
+
+# cron
+RUN apt update \
+    && apt install -y cron tzdata
 
 # grunt less
 RUN apt update && apt install -y ca-certificates curl gnupg

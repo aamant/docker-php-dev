@@ -8,10 +8,6 @@
     printf "extension=blackfire.so\nblackfire.agent_socket=tcp://blackfire:8707\n" > $PHP_INI_DIR/conf.d/blackfire.ini && \
     echo "Blackfire is enabled"
 
-[ "$PHP_ENABLE_GRPC" = "true" ] && \
-    printf "extension=grpc.so\n" > $PHP_INI_DIR/conf.d/grpc.ini && \
-    echo "Blackfire is enabled"
-
 [ "$MAGENTO_DIR" = "true" ] \
     && chown -R www-data var \
     && chown -R www-data generated \
@@ -19,7 +15,7 @@
 
 
 echo "Composer change version to $COMPOSER_VERSION"
-composer self-update -- $COMPOSER_VERSION
+composer self-update --$COMPOSER_VERSION
 
 echo "Change document root to $DOCUMENT_ROOT"
 sed -e "s#DocumentRoot.*#DocumentRoot $DOCUMENT_ROOT#" -i /etc/apache2/sites-available/000-default.conf;

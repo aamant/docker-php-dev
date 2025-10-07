@@ -1,13 +1,13 @@
 FROM php:8.1-apache-bullseye
 
-ENV PHP_ENABLE_XDEBUG false
-ENV PHP_ENABLE_BLACKFIRE false
-ENV MAGENTO_DIR true
+ENV PHP_ENABLE_XDEBUG=false
+ENV PHP_ENABLE_BLACKFIRE=false
+ENV MAGENTO_DIR=true
 ENV DOCUMENT_ROOT=/var/www/html/pub
-ENV COMPOSER_VERSION = "latest"
+ENV COMPOSER_VERSION="latest"
 ENV NODE_MAJOR=18
 
-RUN pecl install xdebug-3.2.0
+RUN pecl install xdebug
 
 RUN apt-get update && apt-get install -y \
 		git zip unzip libcurl4-gnutls-dev \
@@ -94,5 +94,23 @@ RUN ["chmod", "+x", "/docker-entrypoint.sh"]
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
 ADD php/custom.ini /usr/local/etc/php/conf.d/xxx-magento.ini
+
+RUN pecl install apcu
+RUN docker-php-ext-enable apcu --ini-name 10-docker-php-ext-apcu.ini
+
+RUN apt update && apt install -y exiftool
+RUN docker-php-ext-configure exif
+RUN docker-php-ext-install exif
+RUN docker-php-ext-enable exif
+
+RUN apt-get update \
+    && apt-get install -y libmagickwand-dev
+RUN pecl install imagick \
+    && docker-php-ext-enable imagick
+
+#RUN docker-php-ext-install ftp && docker-php-ext-enable ftp
+
+# Clean RUN apt-get clean
+RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/cache/*
 
 CMD ["apache2-foreground"]

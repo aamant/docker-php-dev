@@ -3,8 +3,8 @@ FROM php:7.3-apache-buster
 ENV PHP_ENABLE_XDEBUG false
 ENV PHP_ENABLE_BLACKFIRE false
 ENV MAGENTO_DIR true
-ENV DOCUMENT_ROOT=/var/www/html/pub
-ENV LOGLEVEL="info ssl:warn"
+ENV DOCUMENT_ROOT /var/www/html/pub
+ENV LOGLEVEL "info ssl:warn"
 
 # https://xdebug.org/download/historical
 RUN pecl install xdebug-3.1.6

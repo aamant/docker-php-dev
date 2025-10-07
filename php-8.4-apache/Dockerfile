@@ -1,4 +1,4 @@
-FROM php:8.3-apache-bookworm
+FROM php:8.4-apache-bookworm
 
 ENV PHP_ENABLE_XDEBUG=false
 ENV PHP_ENABLE_BLACKFIRE=false
@@ -6,7 +6,6 @@ ENV MAGENTO_DIR=true
 ENV DOCUMENT_ROOT=/var/www/html/pub
 ENV COMPOSER_VERSION="latest"
 ENV NODE_MAJOR=22
-ENV TZ=Europe/Paris
 
 RUN pecl install xdebug
 
@@ -41,31 +40,32 @@ RUN apt-get update && apt-get install -y \
 
 # grunt less
 RUN apt install -y ca-certificates curl gnupg \
-    && mkdir -p /etc/apt/keyrings \
-    && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
-    && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list \
-    && apt update && apt install -y nodejs \
-    && npm -g install grunt-cli less sass uglify-js uglifycss
+  && mkdir -p /etc/apt/keyrings \
+  && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
+  && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list \
+  && apt update && apt install -y nodejs \
+  && npm -g install grunt-cli less sass uglify-js uglifycss
 
 # smtp
+RUN apt-get update && apt-get install -y msmtp mailutils
+RUN apt purge -y exim4-base exim4-config
 ADD etc/msmtprc /etc/msmtprc
-RUN apt-get install -y msmtp mailutils \
-  && apt purge -y exim4-base exim4-config \
-  && chmod 644 /etc/msmtprc \
-  && rm -rf /usr/sbin/sendmail && ln -s /usr/bin/msmtp /usr/sbin/sendmail
+RUN chmod 644 /etc/msmtprc
+RUN rm -rf /usr/sbin/sendmail && ln -s /usr/bin/msmtp /usr/sbin/sendmail
 
 # Clean RUN apt-get clean
 RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/cache/*
 
 # Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer.phar \
-  && \
-    { \
-      echo '#!/bin/bash'; \
-      echo ''; \
-      echo '/usr/local/bin/php -d memory_limit=-1 /usr/local/bin/composer.phar "$@"'; \
-    } > /usr/local/bin/composer \
-  && chmod +x /usr/local/bin/composer
+RUN curl -sS https://getcomposer.org/installer | \
+  php -- --install-dir=/usr/local/bin --filename=composer.phar
+RUN \
+  { \
+    echo '#!/bin/bash'; \
+    echo ''; \
+    echo '/usr/local/bin/php -d memory_limit=-1 /usr/local/bin/composer.phar "$@"'; \
+  } > /usr/local/bin/composer
+RUN chmod +x /usr/local/bin/composer
 
 # blackfire
 # add env var to docker-compose BLACKFIRE_CLIENT_ID BLACKFIRE_CLIENT_TOKEN
@@ -75,7 +75,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 #    && tar zxpf /tmp/blackfire-probe.tar.gz -C /tmp/blackfire \
 #    && mv /tmp/blackfire/blackfire-*.so $(php -r "echo ini_get ('extension_dir');")/blackfire.so \
 #    && rm -rf /tmp/blackfire /tmp/blackfire-probe.tar.gz
-#
+
 #RUN mkdir -p /tmp/blackfire \
 #    && curl -A "Docker" -L https://blackfire.io/api/v1/releases/client/linux_static/amd64 | tar zxp -C /tmp/blackfire \
 #    && mv /tmp/blackfire/blackfire /usr/bin/blackfire \

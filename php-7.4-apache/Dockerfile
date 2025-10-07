@@ -1,10 +1,11 @@
-FROM php:7.4-apache-buster
+FROM php:7.4-apache-bullseye
 
 ENV PHP_ENABLE_XDEBUG false
 ENV PHP_ENABLE_BLACKFIRE false
 ENV MAGENTO_DIR true
-ENV DOCUMENT_ROOT=/var/www/html/pub
-ENV NODE_MAJOR=20
+ENV DOCUMENT_ROOT /var/www/html/pub
+ENV NODE_MAJOR 20
+ENV TZ Europe/Paris
 
 RUN pecl install xdebug-3.1.2
 
@@ -33,6 +34,12 @@ RUN docker-php-ext-install soap bcmath sockets calendar
 # exif
 RUN docker-php-ext-install exif
 RUN docker-php-ext-configure exif --enable-exif
+
+RUN pecl install redis && docker-php-ext-enable redis
+
+# cron
+RUN apt update \
+    && apt install -y cron tzdata
 
 # grunt less
 RUN apt update && apt install -y ca-certificates curl gnupg

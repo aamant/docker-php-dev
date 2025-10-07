@@ -1,13 +1,14 @@
-FROM php:8.2-apache-bullseye
+FROM php:8.2-apache
 
 ENV PHP_ENABLE_XDEBUG false
 ENV PHP_ENABLE_BLACKFIRE false
 ENV MAGENTO_DIR true
-ENV DOCUMENT_ROOT=/var/www/html/pub
-ENV COMPOSER_VERSION = "latest"
-ENV NODE_MAJOR=20
+ENV DOCUMENT_ROOT /var/www/html/pub
+ENV COMPOSER_VERSION "latest"
+ENV NODE_MAJOR 20
+ENV TZ Europe/Paris
 
-RUN pecl install xdebug-3.3.1
+RUN pecl install xdebug-3.4.0
 
 RUN apt-get update && apt-get install -y \
 		git zip unzip libcurl4-gnutls-dev \
@@ -15,14 +16,22 @@ RUN apt-get update && apt-get install -y \
         libjpeg62-turbo-dev \
         libpng-dev \
         libxslt-dev \
-        libzip-dev \
-        libmpdec-dev \
-    && docker-php-ext-install iconv pdo pdo_mysql zip xsl curl opcache \
+        libzip-dev
+
+RUN docker-php-ext-install iconv pdo pdo_mysql zip xsl curl opcache \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install gd
 
+RUN apt-get install -y libmagickwand-dev \
+    && pecl install imagick \
+    && docker-php-ext-enable imagick
+
+RUN apt-get install -y libexif-dev \
+    && docker-php-ext-install exif
+
 #RUN docker-php-ext-install decimal
 RUN docker-php-ext-install calendar
+
 
 # PHP 
 # intl 
@@ -33,6 +42,15 @@ RUN apt-get update \
 
 # others
 RUN docker-php-ext-install soap bcmath sockets
+
+RUN apt install openssl
+#RUN docker-php-ext-configure ftp --with-openssl-dir=/usr
+RUN docker-php-ext-configure ftp
+RUN docker-php-ext-install ftp
+
+# cron
+RUN apt update \
+    && apt install -y cron tzdata
 
 # grunt less
 RUN apt update && apt install -y ca-certificates curl gnupg
@@ -87,6 +105,10 @@ RUN \
     echo 'SetEnv MAGE_IS_DEVELOPER_MODE 1'; \
     echo 'SetEnvIf X-Forwarded-Proto https HTTPS=on'; \
   } > /etc/apache2/conf-enabled/magento.conf
+
+# install gRPC PHP extension - Signoz
+RUN pecl install grpc
+RUN pecl install opentelemetry
 
 WORKDIR /var/www/html/
 
