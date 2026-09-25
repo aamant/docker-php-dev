@@ -1,4 +1,4 @@
-FROM php:8.4-apache-bookworm
+FROM php:8.5-apache-trixie
 
 ENV PHP_ENABLE_XDEBUG=false
 ENV PHP_ENABLE_BLACKFIRE=false
@@ -18,7 +18,7 @@ RUN apt-get update && apt-get install -y \
         libzip-dev \
         moreutils \
 #        libmpdec-dev \
-    && docker-php-ext-install iconv pdo pdo_mysql zip xsl curl opcache pcntl posix \
+    && docker-php-ext-install iconv pdo pdo_mysql zip xsl curl pcntl posix \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install gd \
     && apt-get install -y libmagickwand-dev \
@@ -98,6 +98,6 @@ ADD docker-entrypoint.sh /docker-entrypoint.sh
 RUN ["chmod", "+x", "/docker-entrypoint.sh"]
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
-ADD php/custom.ini /usr/local/etc/php/conf.d/xxx-magento.ini
+ADD php/custom.ini /usr/local/etc/php/conf.d/xxx-custom.ini
 
 CMD ["apache2-foreground"]

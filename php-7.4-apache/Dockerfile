@@ -16,7 +16,6 @@ RUN apt update && apt install -y  \
         libpng-dev \
         libxslt-dev \
         libzip-dev \
-        cron \
     && docker-php-ext-install iconv pdo pdo_mysql zip xsl curl opcache \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install gd
