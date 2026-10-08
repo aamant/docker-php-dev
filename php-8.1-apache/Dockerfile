@@ -7,7 +7,10 @@ ENV DOCUMENT_ROOT=/var/www/html/pub
 ENV COMPOSER_VERSION="latest"
 ENV NODE_MAJOR=18
 
-RUN pecl install xdebug
+COPY --from=ghcr.io/php/pie:bin /pie /usr/bin/pie
+
+RUN apt-get update && apt-get install -y unzip \
+    && pie install --skip-enable-extension xdebug/xdebug
 
 RUN apt-get update && apt-get install -y \
 		git zip unzip libcurl4-gnutls-dev \
@@ -95,7 +98,7 @@ ENTRYPOINT ["/docker-entrypoint.sh"]
 
 ADD php/custom.ini /usr/local/etc/php/conf.d/xxx-magento.ini
 
-RUN pecl install apcu
+RUN pie install --skip-enable-extension apcu/apcu
 RUN docker-php-ext-enable apcu --ini-name 10-docker-php-ext-apcu.ini
 
 RUN apt update && apt install -y exiftool
@@ -105,8 +108,7 @@ RUN docker-php-ext-enable exif
 
 RUN apt-get update \
     && apt-get install -y libmagickwand-dev
-RUN pecl install imagick \
-    && docker-php-ext-enable imagick
+RUN pie install imagick/imagick
 
 #RUN docker-php-ext-install ftp && docker-php-ext-enable ftp
 

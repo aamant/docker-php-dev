@@ -7,7 +7,10 @@ ENV DOCUMENT_ROOT=/var/www/html/pub
 ENV COMPOSER_VERSION="latest"
 ENV NODE_MAJOR=24
 
-RUN pecl install xdebug
+COPY --from=ghcr.io/php/pie:bin /pie /usr/bin/pie
+
+RUN apt-get update && apt-get install -y unzip \
+    && pie install --skip-enable-extension xdebug/xdebug
 
 RUN apt-get update && apt-get install -y \
 		git zip unzip libcurl4-gnutls-dev \
@@ -22,8 +25,7 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install gd \
     && apt-get install -y libmagickwand-dev \
-    && pecl install imagick \
-    && docker-php-ext-enable imagick \
+    && pie install imagick/imagick \
     #&& docker-php-ext-install decimal \
     && docker-php-ext-install calendar \
     # intl
@@ -34,8 +36,9 @@ RUN apt-get update && apt-get install -y \
     # others
     && docker-php-ext-install soap bcmath sockets \
     # telemetry
-    && pecl install opentelemetry protobuf redis \
-    && docker-php-ext-enable opentelemetry protobuf redis \
+    && pie install open-telemetry/ext-opentelemetry phpredis/phpredis \
+    && pecl install protobuf \
+    && docker-php-ext-enable protobuf \
     # cron & network
     && apt install -y cron tzdata texinfo net-tools
 

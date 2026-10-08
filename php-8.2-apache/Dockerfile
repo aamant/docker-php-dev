@@ -8,7 +8,10 @@ ENV COMPOSER_VERSION "latest"
 ENV NODE_MAJOR 20
 ENV TZ Europe/Paris
 
-RUN pecl install xdebug-3.4.0
+COPY --from=ghcr.io/php/pie:bin /pie /usr/bin/pie
+
+RUN apt-get update && apt-get install -y unzip \
+    && pie install --skip-enable-extension xdebug/xdebug:3.4.0
 
 RUN apt-get update && apt-get install -y \
 		git zip unzip libcurl4-gnutls-dev \
@@ -23,8 +26,7 @@ RUN docker-php-ext-install iconv pdo pdo_mysql zip xsl curl opcache \
     && docker-php-ext-install gd
 
 RUN apt-get install -y libmagickwand-dev \
-    && pecl install imagick \
-    && docker-php-ext-enable imagick
+    && pie install imagick/imagick
 
 RUN apt-get install -y libexif-dev \
     && docker-php-ext-install exif
@@ -107,8 +109,8 @@ RUN \
   } > /etc/apache2/conf-enabled/magento.conf
 
 # install gRPC PHP extension - Signoz
-RUN pecl install grpc
-RUN pecl install opentelemetry
+RUN pie install --skip-enable-extension grpc/grpc-php-ext
+RUN pie install --skip-enable-extension open-telemetry/ext-opentelemetry
 
 WORKDIR /var/www/html/
 
