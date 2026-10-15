@@ -39,7 +39,7 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install soap bcmath sockets \
     && docker-php-ext-install mysqli \
     # telemetry
-    && pie install open-telemetry/ext-opentelemetry phpredis/phpredis \
+    && pie install open-telemetry/ext-opentelemetry phpredis/phpredis apcu/apcu \
     && pecl install protobuf \
     && docker-php-ext-enable protobuf \
     # cron & network
