@@ -6,6 +6,7 @@ ENV MAGENTO_DIR=true
 ENV DOCUMENT_ROOT=/var/www/html/pub
 ENV COMPOSER_VERSION="latest"
 ENV NODE_MAJOR=24
+ENV TZ=Europe/Paris
 
 COPY --from=ghcr.io/php/pie:bin /pie /usr/bin/pie
 
@@ -17,12 +18,13 @@ RUN apt-get update && apt-get install -y \
         libfreetype6-dev \
         libjpeg62-turbo-dev \
         libpng-dev \
+        libwebp-dev \
         libxslt-dev \
         libzip-dev \
         moreutils \
 #        libmpdec-dev \
     && docker-php-ext-install iconv pdo pdo_mysql zip xsl curl pcntl posix \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     && docker-php-ext-install gd \
     && apt-get install -y libmagickwand-dev \
     && pie install imagick/imagick \
@@ -35,8 +37,9 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install ftp exif \
     # others
     && docker-php-ext-install soap bcmath sockets \
+    && docker-php-ext-install mysqli \
     # telemetry
-    && pie install open-telemetry/ext-opentelemetry phpredis/phpredis \
+    && pie install open-telemetry/ext-opentelemetry phpredis/phpredis apcu/apcu \
     && pecl install protobuf \
     && docker-php-ext-enable protobuf \
     # cron & network
