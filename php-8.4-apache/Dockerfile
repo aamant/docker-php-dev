@@ -21,7 +21,7 @@ RUN apt-get update && apt-get install -y \
         libzip-dev \
         moreutils \
 #        libmpdec-dev \
-    && docker-php-ext-install iconv pdo pdo_mysql zip xsl curl opcache pcntl posix \
+    && docker-php-ext-install iconv pdo pdo_mysql zip xsl curl opcache pcntl posix mysqli \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install gd \
     && apt-get install -y libmagickwand-dev \
